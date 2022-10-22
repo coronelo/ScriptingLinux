@@ -47,17 +47,7 @@ function helpPanel()
 	echo -e "${grayColour}[-p]${endColour}${turquoiseColour} Descarga el paquete isc-dhcp-server necesario para la instalacion:${endColour}"
     echo -e "${grayColour}[-t]${endColour}${yellowColour} Seleccionar tarea:${endColour}"
     	echo -e "${grayColour}\t [fixedip]${endColour} ${greenColour}Fijar IP servidor/cliente:  ${endColour}"
-    	echo -e "\t\t${redColour}Parametro obligado: ${endColour}${blueColour}"
-    	echo -e "\t\t[-i] --> Numero de IP a fijar separada por puntos${endColour}${yellowColour} [ejemplo: 192.168.1.100]${endColour}"
-    	echo -e "${blueColour}\t\t[-n] --> Nombre de la INTERFACESv4 del equipo${endColour}${yellowColour} [ejemplo: enp0s4]${endColour}"
-    	echo -e "${grayColour}\t [DHCP_Config]${endColour} ${greenColour}Configurar servicio DHCP:  ${endColour}"
-    	echo -e "${blueColour}\t\t${redColour}Parametro obligado: ${endColour}${blueColour}"
-    	echo -e "${blueColour}\t\t[-i] --> Numero de IP de la subnet separada por puntos${endColour}${yellowColour} [ejemplo: 192.168.1.0]${endColour}"
-    	echo -e "${blueColour}\t\t[-m] --> Numero de mascara de la subnet separada por puntos${endColour}${yellowColour} [ejemplo: 255.255.255.0]${endColour}"
-    	echo -e "${blueColour}\t\t[-n] --> Nombre de la INTERFACESv4 del equipo${endColour}${yellowColour} [ejemplo: enp0s4]${endColour}"
-    	echo -e "\t\t${purpleColour}Parametro opcionales: ${endColour}${blueColour}"
-    	echo -e "\t\t[-R] --> Rango de IP inicio y fin separadas por espacio${endColour}${yellowColour} [ejemplo: 192.168.1.10 192.168.1.50]${endColour}"
-    	echo -e "${blueColour}\t\t[-D] --> DNS que quieras asignar puedes poner tantas como quieras pero separadas por espacio${endColour}${yellowColour} [ejemplo: 8.8.8.8 8.8.4.4]${endColour}"
+    	
     tput cnorm; exit 1
 }
 
@@ -131,19 +121,10 @@ banner;
 #MAIN PROGRAM
 #dependencies; 
 parameter_counter=0
-while getopts "pt:i:n:m:r:t:d:R:D:T:h" arg; do
+while getopts "pt:h" arg; do
     case $arg in
     p)	let parameter_counter+=10;;	
 	t)	option=$OPTARG && let parameter_counter+=1;;
-	i)	ipoption=$OPTARG && let parameter_counter+=1;;
-	n)	nameoption=$OPTARG && let parameter_counter+=1;;
-	m)	maskoption=$OPTARG && let parameter_counter+=1;;
-	r)	routeroption=$OPTARG && let parameter_counter+=1;;
-	t)	tmediooption=$OPTARG && let parameter_counter+=1;;
-	d)	dominiooption=$OPTARG && let parameter_counter+=1;;
-	R)	Rangeoption=$OPTARG && let parameter_counter+=1;;
-	D)	DNSoption=$OPTARG && let parameter_counter+=1;;
-	T)	Tmaximooption=$OPTARG && let parameter_counter+=1;;
 	h) helpPanel;;
     esac
 done
@@ -156,11 +137,11 @@ else
 		descargaISC
 		exit 0
 	fi
-	if [ "$(echo $option)" == "fixedip" ] && [ $parameter_counter -eq 3 ]; then
-		FijarIPInterface $ipoption $nameoption
-	elif [ "$(echo $option)" == "DHCP_Config" ] && [ $parameter_counter -ge 1 ]; then
+	if [ "$(echo $option)" == "FixeIP" ] && [ $parameter_counter -eq 1 ]; then
+		FijarIPInterface
+	elif [ "$(echo $option)" == "DHCPConfig" ] && [ $parameter_counter -eq 1 ]; then
 		#echo "$nameoption"
-		configurarDHCP "$ipoption" "$nameoption" "$maskoption" "$routeroption" "$tmediooption" "$dominiooption" "$Rangeoption" "$DNSoption" "$Tmaximooption"	
+		configurarDHCP	
 	else
 		echo "fallo DHCP_Config"
 		#echo -e "${redColour}!!!!!Error en la sistaxis del comando!!!!!\t${endColour}${greenColour}##### revise el panel de ayuda #####${endColour}"
