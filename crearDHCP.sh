@@ -82,11 +82,43 @@ function descargaISC(){
 	echo -e "${rosa}Paquete isc-dhcp-server descargados ${reset}";
 }
 function FijarIPInterface(){
-	listainterfaces=$(ip a|grep -i broadcast | awk '{print $2}'|tr -d ':')
+	iUP=$(ip a|grep -i  'broadcast'  |grep -iw 'up'| awk '{print $2}'| tr -d '\n' | sed 's/:/ /g')
+	iDOWN=$(ip a|grep -i  'broadcast'  |grep -iw 'down'| awk '{print $2}'|tr -d '\n' | sed 's/:/ /g')
 
-	echo -e "$rosa Asistencia de fijacion IP fija,vamos realizarle uns serie de preguntas para la configuracion de ip.$reset\n $rojoIMPORTANTE NO ESCRIBIR MAL LOS DATOS ESTO PUEDE OCASIONAR ERRORES EN LA CONFIGURACION$reset"
-	echo -e "Nombre de la interfa a fijar: Disponibles--> $verde$negrita$listainterfaces$reset" 
 
+	echo -e "$rosa Asistencia de fijacion IP fija,vamos realizarle uns serie de preguntas para la configuracion de ip.$reset\n"
+		
+	echo -e "$amarillo #################################################################################################$reset"
+	echo -e "$amarillo #####$rojo$negrita IMPORTANTE NO ESCRIBIR MAL LOS DATOS,ESTO PUEDE OCASIONAR ERRORES EN LA CONFIGURACION$reset$amarillo #####$reset"
+	echo -e "$amarillo #################################################################################################\n$reset"
+
+	echo -e "$azul$negrita Nombre de la interfa a fijar: Disponibles--> $reset$verde$negrita$iUP$reset$rojo$negrita$iDOWN$reset"
+	echo -e "$azul$negrita Las interfacez en red que esta en$rojo rojo$reset estan apagadas debes encenderlas.$reset$amarillo ¿Quieres encenderlas? [y/n]$reset" 
+	read respuesta
+
+	if [[ "$respuesta" == "y" ]]; then
+		echo -e "$iDOWN" > tmpiDOWN
+		echo -e "$azul$negritaSelecciona que interface desea activar segun el orden de las apagadas:  $reset" 
+		
+		read name
+		
+		case $name in
+				1)interfaz= cat tmpiDOWN |awk '{print $1}' ;;
+				2)interfaz= cat tmpiDOWN |awk '{print $2}' ;;
+				3)interfaz= cat tmpiDOWN |awk '{print $3}' ;;
+				4)interfaz= cat tmpiDOWN |awk '{print $4}' ;;
+				5)interfaz= cat tmpiDOWN |awk '{print $5}' ;;
+				6)interfaz= cat tmpiDOWN |awk '{print $6}' ;;
+				7)interfaz= cat tmpiDOWN |awk '{print $7}' ;;
+				8)interfaz= cat tmpiDOWN |awk '{print $8}' ;;
+				9)interfaz= cat tmpiDOWN |awk '{print $9}' ;;
+				*)echo "VALOR INESPERADO";exit 1;;
+			esac	
+		
+
+	else
+		echo -e "$azul$negrita Las interfacez en red que esta en rojo estan apagadas debes encenderlas.$reset$amarillo ¿Quieres encenderlas? [y/n]$reset" 
+	fi
 	#ruta="/etc/netplan/0*"
 	#cat netplanconfig | sed "s/IP/$1/" |sed "s/nombreint/$2/" > $ruta 
 	#netplan apply
